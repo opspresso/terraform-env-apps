@@ -1,0 +1,36 @@
+name: Project infrastructure validation
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        directory:
+          - demo/8-agent-studio
+          - demo/8-agent-knowledge
+          - demo/8-agent-runway
+          - demo/8-app-delivery
+          - demo/8-rovr
+          - demo/8-comfy-render
+    defaults:
+      run:
+        working-directory: ${{ matrix.directory }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.17.1'
+      - run: terraform fmt -check
+      - run: terraform init -backend=false -input=false
+      - run: terraform validate
