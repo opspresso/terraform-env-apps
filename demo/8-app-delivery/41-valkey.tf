@@ -2,9 +2,10 @@
 # (argocd-env-addons charts/kro, agent-platform docs/DELIVERY_V2.md). The caches use the intra subnets of 2-vpc,
 # like the RDS instances; each cache has its own user and password, and accepts TLS connections only.
 
+# Preserve the existing description; changing it forces security group replacement.
 resource "aws_security_group" "valkey" {
   name        = "app-delivery-valkey"
-  description = "Agent Runway ValkeyCache serverless caches"
+  description = "Agent Delivery ValkeyCache serverless caches"
   vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
 
   tags = {
