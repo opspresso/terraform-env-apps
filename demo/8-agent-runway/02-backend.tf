@@ -2,8 +2,8 @@ terraform {
   required_version = "1.17.1"
 
   backend "s3" {
-    region = "ap-northeast-2"
-    bucket = "terraform-workshop-396608815058"
+    region       = "ap-northeast-2"
+    bucket       = "terraform-workshop-396608815058"
     key          = "backend/demo/agent-runway-demo/terraform.tfstate"
     encrypt      = true
     use_lockfile = true
