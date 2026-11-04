@@ -21,6 +21,7 @@ jobs:
           - demo/8-app-delivery
           - demo/8-rovr
           - demo/8-comfy-render
+          - demo/8-gitlab
     defaults:
       run:
         working-directory: ${{ matrix.directory }}
