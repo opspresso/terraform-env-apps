@@ -22,7 +22,6 @@ jobs:
           - demo/8-rovr
           - demo/8-comfy-render
           - demo/8-gitlab
-          - demo/8-kanidm-backup
     defaults:
       run:
         working-directory: ${{ matrix.directory }}

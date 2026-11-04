@@ -11,7 +11,6 @@
 | [8-rovr](demo/8-rovr/README.md) | rovr 샌드박스 공유 캐시 EFS |
 | [8-comfy-render](demo/8-comfy-render/) | Comfy Render DynamoDB, S3, 작업 큐 |
 | [8-gitlab](demo/8-gitlab/README.md) | GitLab 오브젝트 스토리지 S3 |
-| [8-kanidm-backup](demo/8-kanidm-backup/README.md) | Kanidm 볼륨 AWS Backup(매일, 30일) |
 
 ## 준비와 실행
 
