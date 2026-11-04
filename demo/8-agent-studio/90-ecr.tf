@@ -1,7 +1,6 @@
 # ECR — 앱 이미지
 
-# 각 앱 저장소의 릴리스 파이프라인이 이미지를 밀어 넣습니다. k3s 호스트는 이 저장소들에서만
-# 이미지를 끌어갑니다 (85-k3s-iam.tf 의 pull 정책).
+# 각 앱 저장소의 릴리스 파이프라인이 이미지를 밀어 넣습니다.
 #
 # `keep_releases` 가 있는 저장소에만 lifecycle 규칙이 붙습니다. 규칙은 `release_tag_prefixes`
 # 의 접두어마다 하나씩 만들고, 접두어별로 최근 `keep_releases` 개를 남깁니다. ECR 의
@@ -14,8 +13,6 @@ locals {
   # 30 인 것은 릴리스 빈도 때문입니다 — 하루 네댓 번 나가므로 10 은 사흘치 롤백 창밖에
   # 되지 않습니다.
   ecr_repositories = {
-    "agent-delivery" = { keep_releases = 30, release_tag_prefixes = ["v"] }
-    # Keep the old repository and its releases during the Runway cutover.
     "agent-runway"    = { keep_releases = 30, release_tag_prefixes = ["v"] }
     "agent-forge"     = { keep_releases = 30, release_tag_prefixes = ["v", "sandbox-v"] }
     "agent-knowledge" = { keep_releases = 30, release_tag_prefixes = ["v"] }

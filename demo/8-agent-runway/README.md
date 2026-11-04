@@ -21,5 +21,4 @@ terraform plan
 terraform apply
 ```
 
-이름을 옮겨도 기존 Terraform backend key는 유지합니다. 이전 Delivery의 KMS alias·bucket·IAM 역할과 parameter는
-전환과 복구를 위해 보존합니다. 기존 key와 bucket은 `prevent_destroy`로 보호하며 테넌트 데이터는 삭제하지 않습니다.
+KMS key는 `prevent_destroy`로 보호합니다.
