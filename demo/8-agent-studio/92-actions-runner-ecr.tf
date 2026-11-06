@@ -19,20 +19,21 @@ resource "aws_ecr_repository" "actions_runner" {
   }
 }
 
-# Runner Pods pin one tag, so tagged images are kept. Only untagged layers
-# left by an interrupted push expire.
+# docker push stores an image index whose platform manifest has no tag, so a
+# rule on untagged images would break pushed tags. Count tagged images only;
+# the chart pins the newest build, and older tags remain for rollback.
 resource "aws_ecr_lifecycle_policy" "actions_runner" {
   repository = aws_ecr_repository.actions_runner.name
 
   policy = jsonencode({
     rules = [{
       rulePriority = 1
-      description  = "Expire untagged images after one day"
+      description  = "Keep the 20 most recent tagged images"
       selection = {
-        tagStatus   = "untagged"
-        countType   = "sinceImagePushed"
-        countUnit   = "days"
-        countNumber = 1
+        tagStatus      = "tagged"
+        tagPatternList = ["*"]
+        countType      = "imageCountMoreThan"
+        countNumber    = 20
       }
       action = { type = "expire" }
     }]
