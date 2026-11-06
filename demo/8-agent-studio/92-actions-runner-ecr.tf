@@ -2,8 +2,9 @@
 # (argocd-env-addons charts/arc-runners). agent-platform builds it from
 # runner/Dockerfile on main; EKS nodes pull it with the node role.
 resource "aws_ecr_repository" "actions_runner" {
-  name                 = "actions-runner"
-  image_tag_mutability = "MUTABLE"
+  name = "actions-runner"
+  # Tags carry the commit (<runner version>-<sha>); a pinned tag never changes.
+  image_tag_mutability = "IMMUTABLE"
 
   image_scanning_configuration {
     scan_on_push = true
@@ -18,18 +19,20 @@ resource "aws_ecr_repository" "actions_runner" {
   }
 }
 
-# Runner Pods pin one tag; keep enough earlier builds to roll back.
+# Runner Pods pin one tag, so tagged images are kept. Only untagged layers
+# left by an interrupted push expire.
 resource "aws_ecr_lifecycle_policy" "actions_runner" {
   repository = aws_ecr_repository.actions_runner.name
 
   policy = jsonencode({
     rules = [{
       rulePriority = 1
-      description  = "Keep the 20 most recent images"
+      description  = "Expire untagged images after one day"
       selection = {
-        tagStatus   = "any"
-        countType   = "imageCountMoreThan"
-        countNumber = 20
+        tagStatus   = "untagged"
+        countType   = "sinceImagePushed"
+        countUnit   = "days"
+        countNumber = 1
       }
       action = { type = "expire" }
     }]
