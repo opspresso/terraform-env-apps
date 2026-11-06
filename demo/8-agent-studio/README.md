@@ -22,6 +22,14 @@ GitHub OIDC의 `aud`는 `sts.amazonaws.com`이어야 한다.
 전환하거나 잠시 분리하지 않는다. 인수 plan의 기존 IAM 변경은 관리 태그뿐이어야 하며,
 기존 ECR·S3·EC2의 재생성이나 권한 변경이 있으면 적용하지 않는다.
 
+## GitHub Actions runner image
+
+`92-actions-runner-ecr.tf`는 ARC runner scale set `eks-arm64`(`argocd-env-addons` `charts/arc-runners`)의
+runner image 저장소 `actions-runner`와 게시 역할 `github--agent-platform-runner-ecr`을 만든다.
+`agent-platform`의 `runner/Dockerfile`을 `main`에서 build해 게시하며, 역할은 그 저장소의 immutable subject와
+`refs/heads/main`만 신뢰한다. EKS 노드는 노드 역할의 ECR pull 권한으로 image를 받는다.
+lifecycle 규칙은 최근 image 20개를 남긴다.
+
 Agent Knowledge 버킷은 [`../8-agent-knowledge`](../8-agent-knowledge/README.md)가 관리한다.
 이 root의 릴리즈 권한 변경은 그 버킷·EKS 클러스터·노드를 만들지 않는다.
 

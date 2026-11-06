@@ -4,7 +4,7 @@
 
 | 디렉터리 | 용도 |
 | --- | --- |
-| [8-agent-studio](demo/8-agent-studio/README.md) | Studio S3, Agent 서비스와 rovr ECR, GitHub 게시 역할 |
+| [8-agent-studio](demo/8-agent-studio/README.md) | Studio S3, Agent 서비스·rovr·Actions runner ECR, GitHub 게시 역할 |
 | [8-agent-knowledge](demo/8-agent-knowledge/README.md) | Knowledge 원본 S3 저장소 |
 | [8-agent-runway](demo/8-agent-runway/README.md) | Runway KMS, 공유 bucket, Sandbox·테넌트 IAM 역할 |
 | [8-app-delivery](demo/8-app-delivery/README.md) | 앱 배포를 위한 registry 권한과 데이터 서비스 네트워크 |
