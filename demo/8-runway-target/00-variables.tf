@@ -16,6 +16,18 @@ variable "target_name" {
   default     = "demo-eb"
 }
 
+variable "amd64_target_name" {
+  description = "The Agent Runway aws-eb Target name for amd64 instances. It shares this setup with target_name."
+  type        = string
+  default     = "demo-eb-amd64"
+}
+
+variable "amd64_instance_types" {
+  description = "The amd64 instance types the amd64 aws-eb Target allows; the first is its default."
+  type        = list(string)
+  default     = ["t3.small", "t3.medium", "m7i.large"]
+}
+
 variable "asg_target_name" {
   description = "The Agent Runway aws-asg Target name in this account."
   type        = string

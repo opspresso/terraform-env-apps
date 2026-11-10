@@ -36,7 +36,7 @@ resource "aws_iam_policy" "app_boundary" {
         Sid      = "Variables"
         Effect   = "Allow"
         Action   = ["ssm:GetParametersByPath"]
-        Resource = [for name in [var.target_name, var.asg_target_name] : "arn:${local.partition}:ssm:${var.region}:${local.account_id}:parameter/agent-runway/${name}/*"]
+        Resource = [for name in [var.target_name, var.amd64_target_name, var.asg_target_name] : "arn:${local.partition}:ssm:${var.region}:${local.account_id}:parameter/agent-runway/${name}/*"]
       },
       {
         Sid       = "VariableKey"

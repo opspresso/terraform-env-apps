@@ -1,6 +1,6 @@
 # The Target as Agent Runway registers it (agent-platform docs/DELIVERY_V3.md D1). It holds no secret value.
-output "target" {
-  value = {
+locals {
+  eb_target = {
     name                = var.target_name
     kind                = "aws-eb"
     architecture        = "arm64"
@@ -21,6 +21,20 @@ output "target" {
     instanceTypes       = var.instance_types
     defaultInstanceType = var.instance_types[0]
   }
+}
+
+output "target" {
+  value = local.eb_target
+}
+
+# The amd64 aws-eb Target: the same setup as target with amd64 instances.
+output "amd64_target" {
+  value = merge(local.eb_target, {
+    name                = var.amd64_target_name
+    architecture        = "amd64"
+    instanceTypes       = var.amd64_instance_types
+    defaultInstanceType = var.amd64_instance_types[0]
+  })
 }
 
 # The aws-asg Target as Agent Runway registers it. `imageId` is not here: Agent Runway sets it from the golden image
