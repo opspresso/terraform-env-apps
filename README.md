@@ -8,6 +8,7 @@
 | [8-agent-knowledge](demo/8-agent-knowledge/README.md) | Knowledge 원본 S3 저장소 |
 | [8-agent-runway](demo/8-agent-runway/README.md) | Runway KMS, 공유 bucket, Sandbox·테넌트 IAM 역할 |
 | [8-app-delivery](demo/8-app-delivery/README.md) | 앱 배포를 위한 registry 권한과 데이터 서비스 네트워크 |
+| [8-runway-target](demo/8-runway-target/README.md) | Agent Runway `aws-eb` Target `demo-eb`의 deploy role, app boundary, EB 서비스 역할, source bundle bucket |
 | [8-rovr](demo/8-rovr/README.md) | rovr 샌드박스 공유 캐시 EFS |
 | [8-comfy-render](demo/8-comfy-render/) | Comfy Render DynamoDB, S3, 작업 큐 |
 | [8-gitlab](demo/8-gitlab/README.md) | GitLab 오브젝트 스토리지 S3 |
