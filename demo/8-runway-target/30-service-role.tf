@@ -14,7 +14,11 @@ resource "aws_iam_role" "service" {
 }
 
 resource "aws_iam_role_policy_attachment" "service" {
-  for_each   = toset(["AWSElasticBeanstalkEnhancedHealth", "AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy"])
+  # Keyed by policy name; the value is its path under arn:aws:iam::aws:policy/.
+  for_each = {
+    AWSElasticBeanstalkEnhancedHealth                   = "service-role/AWSElasticBeanstalkEnhancedHealth"
+    AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy = "AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy"
+  }
   role       = aws_iam_role.service.name
   policy_arn = "arn:${local.partition}:iam::aws:policy/${each.value}"
 }
