@@ -22,3 +22,28 @@ output "target" {
     defaultInstanceType = var.instance_types[0]
   }
 }
+
+# The aws-asg Target as Agent Runway registers it. `imageId` is not here: Agent Runway sets it from the golden image
+# that image-bake built.
+output "asg_target" {
+  value = {
+    name                = var.asg_target_name
+    kind                = "aws-asg"
+    architecture        = "arm64"
+    domain              = var.domain
+    account             = local.account_id
+    region              = var.region
+    deployRole          = aws_iam_role.deploy.arn
+    bakeRole            = aws_iam_role.bake.arn
+    bakeSubnet          = data.terraform_remote_state.vpc.outputs.private_subnets[0]
+    permissionsBoundary = aws_iam_policy.app_boundary.arn
+    vpcId               = data.terraform_remote_state.vpc.outputs.vpc_id
+    instanceSubnets     = data.terraform_remote_state.vpc.outputs.private_subnets
+    loadBalancerSubnets = data.terraform_remote_state.vpc.outputs.public_subnets
+    certificateArn      = data.aws_acm_certificate.apps.arn
+    hostedZoneId        = data.aws_route53_zone.apps.zone_id
+    secretsKeyArn       = data.aws_kms_alias.secrets.target_key_arn
+    instanceTypes       = var.instance_types
+    defaultInstanceType = var.instance_types[0]
+  }
+}
