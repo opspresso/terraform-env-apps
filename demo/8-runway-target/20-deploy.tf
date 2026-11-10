@@ -108,3 +108,69 @@ resource "aws_iam_role_policy" "deploy" {
     ]
   })
 }
+
+# The Elastic Beanstalk administrator policy reaches every application and lets a session pass any role. These denies
+# win over it and keep one session to its own Project environment: Elastic Beanstalk changes only to the application
+# runway-<project>-<environment>, roles passed only from its own stack (with the app boundary) or the service role,
+# and no change to EC2, Auto Scaling, load balancing, CloudWatch or CloudFormation resources tagged for another
+# Project environment (the stack tags its environment, and Elastic Beanstalk copies the tags to its resources).
+resource "aws_iam_role_policy" "deploy_isolation" {
+  name = "runway-isolation"
+  role = aws_iam_role.deploy.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "OtherApplications"
+        Effect = "Deny"
+        Action = [
+          "elasticbeanstalk:CreateApplication", "elasticbeanstalk:UpdateApplication", "elasticbeanstalk:DeleteApplication",
+          "elasticbeanstalk:UpdateApplicationResourceLifecycle", "elasticbeanstalk:CreateApplicationVersion",
+          "elasticbeanstalk:UpdateApplicationVersion", "elasticbeanstalk:DeleteApplicationVersion",
+          "elasticbeanstalk:CreateEnvironment", "elasticbeanstalk:UpdateEnvironment", "elasticbeanstalk:TerminateEnvironment",
+          "elasticbeanstalk:RebuildEnvironment", "elasticbeanstalk:RestartAppServer", "elasticbeanstalk:SwapEnvironmentCNAMEs",
+          "elasticbeanstalk:AbortEnvironmentUpdate", "elasticbeanstalk:ApplyEnvironmentManagedAction",
+          "elasticbeanstalk:ComposeEnvironments", "elasticbeanstalk:AssociateEnvironmentOperationsRole",
+          "elasticbeanstalk:DisassociateEnvironmentOperationsRole", "elasticbeanstalk:CreateConfigurationTemplate",
+          "elasticbeanstalk:UpdateConfigurationTemplate", "elasticbeanstalk:DeleteConfigurationTemplate",
+          "elasticbeanstalk:DeleteEnvironmentConfiguration", "elasticbeanstalk:AddTags", "elasticbeanstalk:RemoveTags",
+          "elasticbeanstalk:UpdateTagsForResource",
+        ]
+        NotResource = [
+          "arn:${local.partition}:elasticbeanstalk:${var.region}:${local.account_id}:application/${local.stack_name}",
+          "arn:${local.partition}:elasticbeanstalk:${var.region}:${local.account_id}:applicationversion/${local.stack_name}/*",
+          "arn:${local.partition}:elasticbeanstalk:${var.region}:${local.account_id}:environment/${local.stack_name}/*",
+          "arn:${local.partition}:elasticbeanstalk:${var.region}:${local.account_id}:configurationtemplate/${local.stack_name}/*",
+          "arn:${local.partition}:elasticbeanstalk:${var.region}::solutionstack/*",
+          "arn:${local.partition}:elasticbeanstalk:${var.region}::platform/*",
+        ]
+      },
+      {
+        Sid         = "OtherRoles"
+        Effect      = "Deny"
+        Action      = ["iam:PassRole"]
+        NotResource = ["arn:${local.partition}:iam::${local.account_id}:role/${local.stack_name}-*", aws_iam_role.service.arn]
+      },
+      {
+        Sid      = "OtherProjectResources"
+        Effect   = "Deny"
+        Action   = ["ec2:*", "autoscaling:*", "elasticloadbalancing:*", "cloudformation:*", "cloudwatch:*"]
+        Resource = "*"
+        Condition = {
+          Null            = { "aws:ResourceTag/opspresso.com/delivery-project" = "false" }
+          StringNotEquals = { "aws:ResourceTag/opspresso.com/delivery-project" = "$${aws:PrincipalTag/delivery-project}" }
+        }
+      },
+      {
+        Sid      = "OtherEnvironmentResources"
+        Effect   = "Deny"
+        Action   = ["ec2:*", "autoscaling:*", "elasticloadbalancing:*", "cloudformation:*", "cloudwatch:*"]
+        Resource = "*"
+        Condition = {
+          Null            = { "aws:ResourceTag/opspresso.com/delivery-env" = "false" }
+          StringNotEquals = { "aws:ResourceTag/opspresso.com/delivery-env" = "$${aws:PrincipalTag/delivery-env}" }
+        }
+      },
+    ]
+  })
+}

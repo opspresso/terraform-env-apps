@@ -21,5 +21,8 @@ argocd-env-projects `charts/delivery/files/app-deploy-eb.yaml`·`app-remove-eb.y
 ## 비용과 위험
 
 - 이 디렉터리의 리소스 자체는 비용이 거의 없다(S3 bundle 저장만). EB 환경마다 ALB와 instance 비용이 든다.
-- `AdministratorAccess-AWSElasticBeanstalk`는 계정의 모든 EB 애플리케이션을 바꿀 수 있다. 이 계정에서 다른 EB 애플리케이션을 운영하면
-  deploy role을 그 애플리케이션에 쓸 수 있으므로 Target 전용 계정을 쓴다.
+- `AdministratorAccess-AWSElasticBeanstalk`는 계정의 모든 EB 애플리케이션에 닿고 어떤 역할이든 넘길 수 있다. 인라인 정책
+  `runway-isolation`의 Deny가 이를 막는다: EB 변경은 자기 애플리케이션 `runway-<project>-<env>`만, 역할 전달은 자기 stack 역할과
+  EB 서비스 역할만, EC2·Auto Scaling·ELB·CloudWatch·CloudFormation 변경은 다른 Project 환경의 tag가 붙은 리소스에는 거부된다.
+- 남은 위험: EB가 version source bundle을 복사해 두는 계정 공용 bucket `elasticbeanstalk-<region>-<account>`는 관리형 정책이 쓰기를
+  허용하고 Project별로 나눌 수 없다. 이 계정에서는 Agent Runway가 아닌 EB 애플리케이션을 운영하지 않는다.
