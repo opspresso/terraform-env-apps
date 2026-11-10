@@ -1,18 +1,18 @@
 # 8-runway-target
 
-Agent Runway `aws-eb` Target `demo-eb`와 `aws-asg` Target `demo-asg`의 계정 리소스입니다. 설계는 agent-platform `docs/DELIVERY_V3.md`(D1·D2), 배포 workflow는
+Agent Runway `aws-eb` Target `demo-eb`(arm64)·`demo-eb-amd64`(amd64)와 `aws-asg` Target `demo-asg`의 계정 리소스입니다. 두 `aws-eb` Target은 같은 역할·bucket·네트워크를 쓰고 instance architecture만 다릅니다. 설계는 agent-platform `docs/DELIVERY_V3.md`(D1·D2), 배포 workflow는
 argocd-env-projects `charts/delivery/files/app-deploy-eb.yaml`·`app-remove-eb.yaml`·`eb-stack.yaml`입니다.
 
 | 리소스 | 용도 |
 | --- | --- |
 | IAM role `agent-runway-target-deploy` | VM Target workflow 단계(ServiceAccount `delivery-target`, 역할 `pod-role--delivery-target`)가 session tag `delivery-project`·`delivery-env`로 넘겨받는다. 그 session은 stack `runway-<project>-<environment>`, 이름이 `runway-<project>-<environment>-*`이고 app boundary가 있는 role·instance profile, 그 환경의 source bundle, `*.apps.rovr.dev` 레코드만 바꾼다. EB 환경의 Auto Scaling group·load balancer는 EB가 호출자 권한으로 만들므로 `AdministratorAccess-AWSElasticBeanstalk`를 붙인다 |
-| IAM policy `agent-runway-app-boundary` | stack이 만드는 instance role의 상한. EB web tier, `/agent-runway/demo-eb/*` Variable, `projects/*` 이미지 읽기만 허용한다 |
+| IAM policy `agent-runway-app-boundary` | stack이 만드는 instance role의 상한. EB web tier, `/agent-runway/<Target 이름>/*` Variable(`demo-eb`·`demo-eb-amd64`·`demo-asg`), `projects/*` 이미지 읽기만 허용한다 |
 | IAM role `agent-runway-eb-service` | EB 서비스 역할(enhanced health, managed update) |
 | inline policy `runway-asg` | deploy role에 `aws-asg` stack 권한을 더한다. Auto Scaling group은 이름(`runway-<project>-<env>-*`)으로, load balancer·target group·보안 그룹·launch template은 stack tag(`opspresso.com/delivery-project`·`delivery-env`)로 범위를 정한다 |
 | IAM role `agent-runway-target-bake` | `image-bake` workflow가 넘겨받아 packer로 golden image를 만든다. 임시 instance·보안 그룹·key pair·`packer-*` instance profile을 만들고 Session Manager로 접속한다 |
 | S3 bucket `agent-runway-demo-eb-<account>` | source bundle `<project>/<environment>/<Deployment ID>.zip`. 비밀 값은 없다. 90일 뒤 만료된다 |
 
-출력 `target`(`demo-eb`)과 `asg_target`(`demo-asg`)은 Agent Runway에 Target으로 등록할 값이다(비밀 값 없음). `asg_target`의 `imageId`는 Agent Runway가 `image-bake` 결과로 정한다.
+출력 `target`(`demo-eb`)·`amd64_target`(`demo-eb-amd64`)·`asg_target`(`demo-asg`)은 Agent Runway에 Target으로 등록할 값이다(비밀 값 없음). `asg_target`의 `imageId`는 Agent Runway가 `image-bake` 결과로 정한다.
 
 ## 적용 순서
 
