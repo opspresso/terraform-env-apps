@@ -1,24 +1,21 @@
-# backend
-
 terraform {
-  required_version = "1.17.1" # terraform version
+  required_version = "1.17.1"
 
   backend "s3" {
-    region  = "ap-northeast-2"
-    bucket  = "terraform-workshop-396608815058"
-    key     = "backend/demo/comfy-render-demo/terraform.tfstate"
-    encrypt = true
+    region       = "ap-northeast-2"
+    bucket       = "terraform-workshop-396608815058"
+    key          = "backend/demo/comfy-render-demo/terraform.tfstate"
+    encrypt      = true
+    use_lockfile = true
   }
 
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "6.71.0" # terraform aws provider version
+      version = "6.71.0"
     }
   }
 }
-
-# provider
 
 provider "aws" {
   region = var.region

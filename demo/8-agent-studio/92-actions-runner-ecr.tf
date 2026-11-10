@@ -82,11 +82,3 @@ resource "aws_iam_role_policy" "github_actions_runner_ecr" {
     ]
   })
 }
-
-output "actions_runner_repository_url" {
-  value = aws_ecr_repository.actions_runner.repository_url
-}
-
-output "actions_runner_publisher_role_arn" {
-  value = aws_iam_role.github_actions_runner_ecr.arn
-}
