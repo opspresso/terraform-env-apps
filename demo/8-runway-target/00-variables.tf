@@ -16,6 +16,12 @@ variable "target_name" {
   default     = "demo-eb"
 }
 
+variable "asg_target_name" {
+  description = "The Agent Runway aws-asg Target name in this account."
+  type        = string
+  default     = "demo-asg"
+}
+
 variable "domain" {
   description = "The app domain of the Target. Hosts are <slug>.<domain> and <slug>-<env>.<domain>."
   type        = string
