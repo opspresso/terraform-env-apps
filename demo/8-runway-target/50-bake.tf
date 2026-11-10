@@ -41,6 +41,21 @@ resource "aws_iam_role_policy" "bake" {
         Resource = "*"
       },
       {
+        # encrypt_boot copies the temporary AMI into the encrypted one, then deregisters the temporary AMI. Only AMIs a
+        # bake tagged can be deregistered.
+        Sid      = "EncryptedCopy"
+        Effect   = "Allow"
+        Action   = ["ec2:CopyImage"]
+        Resource = "*"
+      },
+      {
+        Sid       = "DeregisterBakedImages"
+        Effect    = "Allow"
+        Action    = ["ec2:DeregisterImage"]
+        Resource  = "*"
+        Condition = { Null = { "aws:ResourceTag/opspresso.com/runway-image" = "false" } }
+      },
+      {
         # The boot volume is encrypted with the account's default EBS key.
         Sid       = "EncryptedVolumes"
         Effect    = "Allow"
