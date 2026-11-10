@@ -19,11 +19,8 @@ terraform {
 
 provider "aws" {
   region = var.region
+
   default_tags {
-    tags = {
-      Environment = "demo"
-      ManagedBy   = "Terraform"
-      Project     = "terraform-env-demo/demo/8-agent-knowledge"
-    }
+    tags = local.tags
   }
 }

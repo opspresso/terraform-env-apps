@@ -1,5 +1,3 @@
-# output
-
 output "table" {
   description = "DYNAMODB_TABLE_NAME"
   value       = aws_dynamodb_table.this.name

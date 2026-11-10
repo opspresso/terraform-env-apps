@@ -9,6 +9,14 @@ permissions:
   contents: read
 
 jobs:
+  layout:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: ./scripts/check-layout.sh
+
   validate:
     runs-on: ubuntu-latest
     strategy:
