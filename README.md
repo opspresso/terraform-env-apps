@@ -64,7 +64,7 @@ plan에서 예상한 변경만 있는지 확인한 뒤 `terraform apply`를 실�
 
 기존 `terraform-env-demo`에서 관리하던 root는 코드만 이 저장소로 옮겼습니다. S3 bucket·backend key·workspace·리소스 주소와 provider의 기존 `Project` 태그를 유지하므로 state 복사나 `terraform state mv`, import는 필요하지 않습니다. backend key는 임의로 변경하지 마세요.
 
-`7-shared`는 terraform-env-demo의 공통 root(`4-role`, `5-eks`, `6-eks-node`)에서 일부 리소스만 떼어 낸 root입니다. 리소스 이름을 바꾸지 않고 `98-import.tf`의 `import` 블록으로 state에 가져옵니다. import를 적용한 뒤 terraform-env-demo 쪽 state에서 해당 리소스를 제거하고, 두 저장소의 plan에 삭제가 없는지 확인한 다음 `98-import.tf`를 지웁니다.
+`7-shared`는 terraform-env-demo의 공통 root(`4-role`, `5-eks`, `6-eks-node`)에서 일부 리소스만 떼어 낸 root입니다. 2026-11-11에 리소스 이름을 바꾸지 않고 `import`로 state에 가져왔고, terraform-env-demo state에서는 제거했습니다.
 
 새 checkout의 해당 디렉터리에서 `terraform init` 후 `terraform workspace show`가 `default`인지 확인하고 `terraform plan`을 검토합니다. 기존 디렉터리에서 사용한 미추적 `.tfvars`와 환경변수가 있다면 안전하게 전달해야 합니다. 민감한 값은 커밋하거나 로그에 노출하지 마세요. 기존 checkout에서 같은 root를 다시 적용하지 말고, plan에 예상치 못한 생성·변경·삭제가 보이면 적용을 중단하고 state와 입력값을 확인합니다.
 
