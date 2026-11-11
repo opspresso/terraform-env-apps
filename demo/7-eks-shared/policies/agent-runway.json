@@ -58,6 +58,15 @@
       "Resource": "arn:aws:iam::*:role/agent-runway-sandbox-objects"
     },
     {
+      "Sid": "SourceArchiveUpload",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:AbortMultipartUpload"
+      ],
+      "Resource": "arn:aws:s3:::agent-runway-objects/eks-demo/_sources/*"
+    },
+    {
       "Sid": "ObjectPrefixCleanup",
       "Effect": "Allow",
       "Action": [

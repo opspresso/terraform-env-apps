@@ -7,6 +7,7 @@ Agent Runway의 테넌트 리소스와 Variable에 필요한 AWS 리소스입니
 | --- | --- |
 | KMS `alias/agent-runway` | SSM `/agent-runway/<cluster>/<project>/<env>/<VARIABLE>` SecureString 암호화 |
 | S3 `agent-runway-objects` | `bucket` 리소스의 공유 bucket. prefix `<cluster>/app-<project>-<env>/<name>/` |
+| S3 lifecycle `expire-source-archives` | Release 소스 아카이브 `<cluster>/_sources/`를 1일 뒤 삭제. Runway가 올리고(`pod-role--agent-runway`) app-build checkout 단계가 읽는다(`pod-role--delivery-source`) |
 | IAM `agent-runway-sandbox-objects` | Runway가 assume해 Sandbox용 단기 credential을 발급 |
 | IAM `agent-runway-tenant-objects` | 테넌트 앱의 Pod Identity 역할. 클러스터·namespace session tag로 객체 접근을 제한 |
 | IAM `agent-runway-tenant-secrets` | 테넌트 SecretStore가 session tag의 Project·Environment 경로만 읽는 역할 |
