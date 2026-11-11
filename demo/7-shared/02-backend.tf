@@ -4,16 +4,28 @@ terraform {
   backend "s3" {
     region       = "ap-northeast-2"
     bucket       = "terraform-workshop-396608815058"
-    key          = "backend/demo/node-pool-demo/terraform.tfstate"
+    key          = "backend/demo/shared-demo/terraform.tfstate"
     encrypt      = true
     use_lockfile = true
   }
 
   required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "6.71.0"
+    }
     kubernetes = {
       source  = "hashicorp/kubernetes"
       version = "3.4.0"
     }
+  }
+}
+
+provider "aws" {
+  region = local.region
+
+  default_tags {
+    tags = local.tags
   }
 }
 

@@ -24,9 +24,7 @@ jobs:
       matrix:
         directory:
           - demo/5-k3s
-          - demo/7-pod-identity
-          - demo/7-github-roles
-          - demo/7-node-pool
+          - demo/7-shared
           - demo/8-agent-studio
           - demo/8-domain-mail
           - demo/8-agent-knowledge

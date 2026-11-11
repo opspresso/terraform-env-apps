@@ -1,6 +1,20 @@
-# 7-node-pool
+# 7-shared
 
-`eks-demo`(terraform-env-demo `demo/5-eks`)에 opspresso 서비스 전용 NodeClass·NodePool을 둔다.
+여러 opspresso 서비스가 함께 쓰는 `eks-demo`(terraform-env-demo `demo/5-eks`)의 전용 리소스를 둔다.
+
+| 파일 | 내용 |
+| --- | --- |
+| `20-pod-roles.tf`, `policies/` | Pod Identity 역할 `pod-role--<key>`와 정책. 키 목록은 `03-locals.tf`의 `pod_identities` |
+| `30-pod-identity.tf` | 위 역할과 ServiceAccount를 잇는 `eks-demo` association |
+| `40-github-roles.tf` | opspresso 저장소 CI가 assume하는 GitHub Actions 역할 |
+| `60-`~`65-*.tf` | 전용 NodeClass·NodePool |
+
+역할 이름은 다른 root와 서비스가 이름으로 참조한다(예: `pod-role--agent-runway`, `pod-role--delivery-target`). 이름을 바꾸지 않는다.
+이 root는 AWS와 Kubernetes provider를 함께 쓰므로 plan에도 `eks-demo` API 접근 권한이 필요하다.
+
+## Node pool
+
+opspresso 서비스 전용 NodeClass·NodePool을 둔다.
 기본 노드(`baseline-*`, `general`)와 GitHub Actions runner pool은 terraform-env-demo `demo/6-eks-node`가 관리한다.
 EKS 관리형 default NodeClass·NodePool은 변경하지 않는다.
 

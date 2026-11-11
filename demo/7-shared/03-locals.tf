@@ -49,6 +49,6 @@ locals {
   tags = {
     Environment = "demo"
     ManagedBy   = "Terraform"
-    Project     = "terraform-env-opsp/demo/7-pod-identity"
+    Project     = "terraform-env-opsp/demo/7-shared"
   }
 }
