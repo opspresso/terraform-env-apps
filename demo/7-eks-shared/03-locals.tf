@@ -38,6 +38,12 @@ locals {
       namespace       = "app-delivery"
       service_account = "delivery-target"
     }
+    # The checkout step of app-build reads the source archive that Agent Runway uploaded for one Release
+    # (agent-runway-objects/<cluster>/_sources/). It holds no Git credential.
+    "delivery-source" = {
+      namespace       = "app-delivery"
+      service_account = "delivery-source"
+    }
     # GitLab (argocd-env-addons charts/gitlab) keeps its objects in the opspresso-gitlab-* buckets (8-gitlab).
     # Every GitLab Pod uses the one ServiceAccount gitlab.
     "gitlab" = {

@@ -42,6 +42,29 @@ resource "aws_s3_bucket_policy" "runway_objects" {
   depends_on = [aws_s3_bucket_public_access_block.runway_objects]
 }
 
+# Agent Runway가 Release마다 올리는 소스 아카이브(`<cluster>/_sources/<Release ID>.tar.gz`)는 빌드가 끝나면 필요 없습니다.
+# namespace 이름은 `_`로 시작할 수 없으므로 이 prefix는 테넌트 prefix(`<cluster>/<namespace>/`)와 겹치지 않습니다.
+resource "aws_s3_bucket_lifecycle_configuration" "runway_objects" {
+  bucket = aws_s3_bucket.runway_objects.id
+
+  rule {
+    id     = "expire-source-archives"
+    status = "Enabled"
+
+    filter {
+      prefix = "${var.cluster_name}/_sources/"
+    }
+
+    expiration {
+      days = 1
+    }
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 1
+    }
+  }
+}
+
 # Sandbox용 1시간 credential. Agent Runway가 AssumeRole하면서 session policy로 리소스 prefix 하나로 좁힙니다.
 resource "aws_iam_role" "runway_sandbox_objects" {
   name                 = "agent-runway-sandbox-objects"
