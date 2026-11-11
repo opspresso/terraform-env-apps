@@ -5,7 +5,7 @@ opspresso 전용 AWS·EKS 리소스를 관리합니다. 공통 VPC·ALB·EKS·�
 | 디렉터리 | 용도 |
 | --- | --- |
 | [5-k3s](demo/5-k3s/README.md) | 삭제한 k3s 서버의 보관용 코드. 적용하지 않음 |
-| [7-eks-shared](demo/7-eks-shared/README.md) | 여러 서비스가 함께 쓰는 `eks-demo` 전용 리소스: Agent 서비스·Delivery·GitLab Pod Identity 역할과 association, GitHub Actions 역할, Workspace·rovr sandbox·amd64 build·Agent PostgreSQL NodePool |
+| [7-eks-shared](demo/7-eks-shared/README.md) | 여러 서비스가 함께 쓰는 `eks-demo` 전용 리소스: Agent 서비스·Delivery·GitLab Pod Identity 역할과 association, GitHub Actions 역할, Workspace·rovr sandbox·amd64 build NodePool |
 | [8-domain-mail](demo/8-domain-mail/README.md) | `opspresso.com` Cloudflare 수신 전달과 SES SMTP 발신 |
 | [8-agent-studio](demo/8-agent-studio/README.md) | Studio S3, Agent 서비스·rovr·Actions runner ECR, GitHub 게시 역할 |
 | [8-agent-knowledge](demo/8-agent-knowledge/README.md) | Knowledge 원본 S3 저장소 |

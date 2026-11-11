@@ -27,9 +27,3 @@ variable "rovr_sandbox_max_pods" {
     error_message = "rovr_sandbox_max_pods must be an integer between 1 and 60."
   }
 }
-
-variable "zones" {
-  description = "agent-database NodePool이 노드를 띄울 수 있는 AZ 목록입니다. terraform-env-demo demo/6-eks-node의 baseline_zones와 같게 둡니다."
-  type        = list(string)
-  default     = ["ap-northeast-2a", "ap-northeast-2c"]
-}
