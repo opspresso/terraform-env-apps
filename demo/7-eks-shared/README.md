@@ -1,4 +1,4 @@
-# 7-shared
+# 7-eks-shared
 
 여러 opspresso 서비스가 함께 쓰는 `eks-demo`(terraform-env-demo `demo/5-eks`)의 전용 리소스를 둔다.
 

@@ -49,6 +49,6 @@ locals {
   tags = {
     Environment = "demo"
     ManagedBy   = "Terraform"
-    Project     = "terraform-env-opsp/demo/7-shared"
+    Project     = "terraform-env-opsp/demo/7-eks-shared"
   }
 }
