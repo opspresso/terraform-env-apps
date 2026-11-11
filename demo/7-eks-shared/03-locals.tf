@@ -38,7 +38,7 @@ locals {
       namespace       = "app-delivery"
       service_account = "delivery-target"
     }
-    # The checkout step of app-build reads the source archive that Agent Runway uploaded for one Release
+    # The checkout step of app-build reads the source archive that Agent Runway uploaded for a deployment request
     # (agent-runway-objects/<cluster>/_sources/). It holds no Git credential.
     "delivery-source" = {
       namespace       = "app-delivery"

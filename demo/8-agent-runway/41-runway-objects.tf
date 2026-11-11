@@ -42,7 +42,8 @@ resource "aws_s3_bucket_policy" "runway_objects" {
   depends_on = [aws_s3_bucket_public_access_block.runway_objects]
 }
 
-# Agent Runway가 Release마다 올리는 소스 아카이브(`<cluster>/_sources/<Release ID>.tar.gz`)는 빌드가 끝나면 필요 없습니다.
+# Agent Runway가 배포 요청 때 올리는 소스 아카이브(`<cluster>/_sources/<Project ID>/<commit SHA>.tar.gz`)는 빌드가 끝나면 필요 없습니다.
+# 빌드는 승인 대기(최대 24시간) 뒤에 시작할 수 있으므로 2일 뒤에 지웁니다.
 # namespace 이름은 `_`로 시작할 수 없으므로 이 prefix는 테넌트 prefix(`<cluster>/<namespace>/`)와 겹치지 않습니다.
 resource "aws_s3_bucket_lifecycle_configuration" "runway_objects" {
   bucket = aws_s3_bucket.runway_objects.id
@@ -56,7 +57,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "runway_objects" {
     }
 
     expiration {
-      days = 1
+      days = 2
     }
 
     abort_incomplete_multipart_upload {
