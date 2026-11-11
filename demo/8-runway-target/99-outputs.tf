@@ -1,12 +1,23 @@
-# The Target as Agent Runway registers it (agent-platform docs/DELIVERY_V3.md D1). It holds no secret value.
-locals {
-  eb_target = {
-    name                = var.target_name
-    kind                = "aws-eb"
-    architecture        = "arm64"
-    domain              = var.domain
-    account             = local.account_id
-    region              = var.region
+# What an administrator enters for an Agent Runway environment of this account: its account and its eb target. They
+# hold no secret value. The tiers pair var.instance_types and var.amd64_instance_types in the order small, medium, large.
+output "account" {
+  value = {
+    id     = local.account_id
+    region = var.region
+  }
+}
+
+output "eb_target" {
+  value = {
+    type          = "eb"
+    name          = var.target_name
+    architectures = ["arm64", "amd64"]
+    domain        = var.domain
+    sizes = {
+      small  = { instanceTypes = { arm64 = var.instance_types[0], amd64 = var.amd64_instance_types[0] }, min = 1, max = 1 }
+      medium = { instanceTypes = { arm64 = var.instance_types[1], amd64 = var.amd64_instance_types[1] }, min = 1, max = 2 }
+      large  = { instanceTypes = { arm64 = var.instance_types[2], amd64 = var.amd64_instance_types[2] }, min = 2, max = 4 }
+    }
     deployRole          = aws_iam_role.deploy.arn
     artifactBucket      = aws_s3_bucket.artifacts.bucket
     solutionStack       = var.solution_stack
@@ -18,46 +29,5 @@ locals {
     certificateArn      = data.aws_acm_certificate.apps.arn
     hostedZoneId        = data.aws_route53_zone.apps.zone_id
     secretsKeyArn       = data.aws_kms_alias.secrets.target_key_arn
-    instanceTypes       = var.instance_types
-    defaultInstanceType = var.instance_types[0]
-  }
-}
-
-output "target" {
-  value = local.eb_target
-}
-
-# The amd64 aws-eb Target: the same setup as target with amd64 instances.
-output "amd64_target" {
-  value = merge(local.eb_target, {
-    name                = var.amd64_target_name
-    architecture        = "amd64"
-    instanceTypes       = var.amd64_instance_types
-    defaultInstanceType = var.amd64_instance_types[0]
-  })
-}
-
-# The aws-asg Target as Agent Runway registers it. `imageId` is not here: Agent Runway sets it from the golden image
-# that image-bake built.
-output "asg_target" {
-  value = {
-    name                = var.asg_target_name
-    kind                = "aws-asg"
-    architecture        = "arm64"
-    domain              = var.domain
-    account             = local.account_id
-    region              = var.region
-    deployRole          = aws_iam_role.deploy.arn
-    bakeRole            = aws_iam_role.bake.arn
-    bakeSubnet          = data.terraform_remote_state.vpc.outputs.private_subnets[0]
-    permissionsBoundary = aws_iam_policy.app_boundary.arn
-    vpcId               = data.terraform_remote_state.vpc.outputs.vpc_id
-    instanceSubnets     = data.terraform_remote_state.vpc.outputs.private_subnets
-    loadBalancerSubnets = data.terraform_remote_state.vpc.outputs.public_subnets
-    certificateArn      = data.aws_acm_certificate.apps.arn
-    hostedZoneId        = data.aws_route53_zone.apps.zone_id
-    secretsKeyArn       = data.aws_kms_alias.secrets.target_key_arn
-    instanceTypes       = var.instance_types
-    defaultInstanceType = var.instance_types[0]
   }
 }
