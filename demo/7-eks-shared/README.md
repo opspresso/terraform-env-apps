@@ -40,7 +40,7 @@ rovr 실행 Pod만 받는다. 실행 Pod는 2 CPU·4Gi를 요청하므로 8-CPU 
 실행 Pod는 `karpenter.sh/do-not-disrupt`를 달고, 노드 drain은 rovr sandbox 마감(90분)까지 기다린다. Spot 회수는 2분 예고 뒤 실행 중인 run을 중단시킨다.
 
 `delivery-amd64` pool은 Agent Runway Release의 amd64 image를 native로 build한다(argocd-env-projects `charts/delivery`
-`files/app-build.yaml`). 다른 NodePool은 모두 arm64다. taint `opspresso.com/delivery-build`로 app-build `build` step만 받고,
+`files/app-build-v2.yaml`). 다른 NodePool은 모두 arm64다. taint `opspresso.com/delivery-build`로 `app-build-v2`의 `build` step만 받고,
 build가 없으면 비어 있다. Spot만 쓰므로 Spot 회수는 실행 중인 Release build를 실패시킨다.
 
 공유 Agent PostgreSQL과 다른 중요 서비스는 terraform-env-demo `demo/6-eks-node`의 on-demand `core-2a`·`core-2c` NodePool에서 실행한다.
