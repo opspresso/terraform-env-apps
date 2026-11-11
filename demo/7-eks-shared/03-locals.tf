@@ -32,8 +32,8 @@ locals {
       namespace       = "app-delivery"
       service_account = "delivery-registry"
     }
-    # The steps of the VM Target Workflows (argocd-env-projects app-deploy-eb/-asg, app-remove-eb/-asg, image-bake)
-    # assume the roles agent-runway-target-deploy and agent-runway-target-bake of the Target account (8-runway-target).
+    # The steps of the VM Target Workflows (argocd-env-projects app-deploy-eb, app-remove-eb) assume the role
+    # agent-runway-target-deploy of the environment's account (8-runway-target).
     "delivery-target" = {
       namespace       = "app-delivery"
       service_account = "delivery-target"

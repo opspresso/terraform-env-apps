@@ -36,7 +36,7 @@ resource "aws_iam_policy" "app_boundary" {
         Sid      = "Variables"
         Effect   = "Allow"
         Action   = ["ssm:GetParametersByPath"]
-        Resource = [for name in [var.target_name, var.amd64_target_name, var.asg_target_name] : "arn:${local.partition}:ssm:${var.region}:${local.account_id}:parameter/agent-runway/${name}/*"]
+        Resource = [for name in [var.target_name, var.amd64_target_name] : "arn:${local.partition}:ssm:${var.region}:${local.account_id}:parameter/agent-runway/${name}/*"]
       },
       {
         Sid       = "VariableKey"
@@ -44,13 +44,6 @@ resource "aws_iam_policy" "app_boundary" {
         Action    = ["kms:Decrypt"]
         Resource  = data.aws_kms_alias.secrets.target_key_arn
         Condition = { StringEquals = { "kms:ViaService" = "ssm.${var.region}.amazonaws.com" } }
-      },
-      {
-        # aws-asg instances signal their own stack (cfn-signal) when the app is healthy.
-        Sid      = "StackSignal"
-        Effect   = "Allow"
-        Action   = ["cloudformation:SignalResource"]
-        Resource = "arn:${local.partition}:cloudformation:${var.region}:${local.account_id}:stack/runway-*/*"
       },
       {
         Sid      = "RegistryLogin"

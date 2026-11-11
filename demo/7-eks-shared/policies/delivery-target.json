@@ -8,10 +8,7 @@
         "sts:AssumeRole",
         "sts:TagSession"
       ],
-      "Resource": [
-        "arn:aws:iam::*:role/agent-runway-target-deploy",
-        "arn:aws:iam::*:role/agent-runway-target-bake"
-      ]
+      "Resource": "arn:aws:iam::*:role/agent-runway-target-deploy"
     }
   ]
 }
