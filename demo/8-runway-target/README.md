@@ -16,7 +16,7 @@ argocd-env-projects `charts/delivery/files/app-deploy-eb.yaml`·`app-remove-eb.y
 
 ## 적용 순서
 
-1. terraform-env-demo `demo/4-role`(역할 `pod-role--delivery-target`)과 `demo/5-eks`(Pod Identity `app-delivery/delivery-target`)를 적용한다.
+1. `demo/7-eks-shared`(역할 `pod-role--delivery-target`과 Pod Identity `app-delivery/delivery-target`)를 적용한다.
    deploy role의 trust policy가 그 역할을 가리키므로 역할이 먼저 있어야 한다.
 2. 이 디렉터리를 적용한다.
 
