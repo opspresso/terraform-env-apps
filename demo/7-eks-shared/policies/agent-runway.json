@@ -32,6 +32,17 @@
       }
     },
     {
+      "Sid": "TargetSecretsSession",
+      "Effect": "Allow",
+      "Action": "sts:AssumeRole",
+      "Resource": "arn:aws:iam::*:role/agent-runway-target-secrets",
+      "Condition": {
+        "StringLike": {
+          "sts:ExternalId": "?*"
+        }
+      }
+    },
+    {
       "Sid": "SandboxObjectCredentials",
       "Effect": "Allow",
       "Action": [
