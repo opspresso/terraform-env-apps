@@ -24,7 +24,14 @@ variable "parent_zone" {
 variable "target_domains" {
   description = "다른 계정 eb Target의 앱 도메인과 그 계정 zone의 name server입니다. 값은 그 zone을 만든 root의 output `name_servers`입니다(terraform-env-two `two/3-domain`)."
   type        = map(list(string))
-  default     = {}
+  default = {
+    "two.rovr.dev" = [
+      "ns-1534.awsdns-63.org",
+      "ns-1710.awsdns-21.co.uk",
+      "ns-406.awsdns-50.com",
+      "ns-833.awsdns-40.net",
+    ]
+  }
 
   validation {
     condition     = alltrue([for domain, servers in var.target_domains : endswith(domain, ".${var.parent_zone}") && length(servers) > 0])
