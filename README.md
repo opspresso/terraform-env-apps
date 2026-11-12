@@ -12,7 +12,6 @@ opspresso 전용 AWS·EKS 리소스를 관리합니다. 공통 VPC·ALB·EKS·�
 | [8-agent-runway](demo/8-agent-runway/README.md) | Runway KMS, 공유 bucket, Sandbox·테넌트 IAM 역할 |
 | [8-app-delivery](demo/8-app-delivery/README.md) | 앱 배포를 위한 registry 권한과 데이터 서비스 네트워크 |
 | [8-runway-target](demo/8-runway-target/README.md) | Agent Runway 환경의 `eb` target `demo-eb`의 deploy role, app boundary, EB 서비스 역할, source bundle bucket |
-| [8-runway-target-two](demo/8-runway-target-two/README.md) | 계정 nalbam-two(`552292899126`)의 `stg` 환경 `eb` target `two-eb-amd64`: VPC, `two.rovr.dev` zone·인증서, Variable KMS key, deploy·secrets 역할 |
 | [8-rovr](demo/8-rovr/README.md) | rovr 샌드박스 공유 캐시 EFS |
 | [8-comfy-render](demo/8-comfy-render/) | Comfy Render DynamoDB, S3, 작업 큐 |
 | [8-gitlab](demo/8-gitlab/README.md) | GitLab 오브젝트 스토리지 S3 |
@@ -63,11 +62,11 @@ plan에서 예상한 변경만 있는지 확인한 뒤 `terraform apply`를 실�
 
 ### Module
 
-`modules/<이름>/`은 root와 같은 파일 이름을 씁니다. `02-backend.tf` 대신 `02-versions.tf`에 `terraform { required_providers }`만 두고 version은 적지 않습니다. 호출하는 root가 Terraform·provider version을 고정하고 backend와 provider를 설정합니다. root는 `source = "../../modules/<이름>"`으로 호출합니다. `scripts/check-layout.sh`가 module의 파일 배치도 검사합니다.
+`modules/<이름>/`은 root와 같은 파일 이름을 씁니다. `02-backend.tf` 대신 `02-versions.tf`에 `terraform { required_providers }`만 두고 version은 적지 않습니다. 호출하는 root가 Terraform·provider version을 고정하고 backend와 provider를 설정합니다. 이 저장소의 root는 `source = "../../modules/<이름>"`, 다른 저장소는 `git::https://github.com/opspresso/terraform-env-opsp.git//modules/<이름>?ref=<commit SHA>`로 호출합니다. module의 변수·출력을 바꾸면 다른 저장소의 호출도 확인합니다. `scripts/check-layout.sh`가 module의 파일 배치도 검사합니다.
 
 | Module | 사용하는 root | 내용 |
 | --- | --- | --- |
-| `runway-target` | `8-runway-target`, `8-runway-target-two` | Agent Runway `eb` target의 app boundary, deploy role, EB 서비스 역할, source bundle bucket. 다른 계정의 target이면 external ID 조건과 secrets 역할 |
+| `runway-target` | `8-runway-target`, [terraform-env-two](https://github.com/opspresso/terraform-env-two) `two/8-runway-target` | Agent Runway `eb` target의 app boundary, deploy role, EB 서비스 역할, source bundle bucket. 다른 계정의 target이면 external ID 조건과 secrets 역할 |
 
 ## 기존 환경 이전
 
