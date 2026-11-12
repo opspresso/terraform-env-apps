@@ -31,6 +31,7 @@ jobs:
           - demo/8-agent-runway
           - demo/8-app-delivery
           - demo/8-runway-target
+          - demo/8-runway-target-two
           - demo/8-rovr
           - demo/8-comfy-render
           - demo/8-gitlab

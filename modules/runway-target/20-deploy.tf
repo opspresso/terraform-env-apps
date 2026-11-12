@@ -1,7 +1,8 @@
 # The deploy role of this Target. The app-deploy-eb and app-remove-eb steps (ServiceAccount delivery-target) assume it
 # with the session tags delivery-project and delivery-env, and the policy lets that session change only the stack
 # runway-<project>-<environment>, the roles and instance profiles named runway-* with the app boundary, the source
-# bundles of that environment and the app records of the Target zone.
+# bundles of that environment and the app records of the Target zone. A Target in another account sends Agent Runway's
+# external ID (argocd-env-projects charts/delivery files/target.sh assume_target).
 resource "aws_iam_role" "deploy" {
   name                 = "agent-runway-target-deploy"
   max_session_duration = 3600
@@ -10,18 +11,18 @@ resource "aws_iam_role" "deploy" {
     Statement = [
       {
         Effect    = "Allow"
-        Principal = { AWS = local.target_step_role_arn }
+        Principal = { AWS = var.target_step_role_arn }
         Action    = "sts:AssumeRole"
-        Condition = {
+        Condition = merge({
           StringLike = {
             "aws:RequestTag/delivery-project" = "?*"
             "aws:RequestTag/delivery-env"     = "?*"
           }
-        }
+        }, local.external_id_condition)
       },
       {
         Effect    = "Allow"
-        Principal = { AWS = local.target_step_role_arn }
+        Principal = { AWS = var.target_step_role_arn }
         Action    = "sts:TagSession"
         Condition = {
           "ForAllValues:StringEquals" = { "aws:TagKeys" = concat(["delivery-project", "delivery-env"], local.pod_identity_tag_keys) }
@@ -48,7 +49,7 @@ resource "aws_iam_role_policy" "deploy" {
         Sid      = "OwnStack"
         Effect   = "Allow"
         Action   = ["cloudformation:CreateStack", "cloudformation:UpdateStack", "cloudformation:DeleteStack", "cloudformation:CreateChangeSet", "cloudformation:ExecuteChangeSet", "cloudformation:DescribeChangeSet", "cloudformation:DeleteChangeSet", "cloudformation:DescribeStacks", "cloudformation:DescribeStackEvents", "cloudformation:GetTemplateSummary"]
-        Resource = "arn:${local.partition}:cloudformation:${var.region}:${local.account_id}:stack/${local.stack_name}/*"
+        Resource = "arn:${local.partition}:cloudformation:${local.region}:${local.account_id}:stack/${local.stack_name}/*"
       },
       {
         Sid      = "Templates"
@@ -94,7 +95,7 @@ resource "aws_iam_role_policy" "deploy" {
         Sid      = "AppRecords"
         Effect   = "Allow"
         Action   = ["route53:ChangeResourceRecordSets", "route53:GetHostedZone", "route53:ListResourceRecordSets"]
-        Resource = data.aws_route53_zone.apps.arn
+        Resource = "arn:${local.partition}:route53:::hostedzone/${var.hosted_zone_id}"
         Condition = {
           "ForAllValues:StringLike" = { "route53:ChangeResourceRecordSetsNormalizedRecordNames" = ["*.${var.domain}"] }
         }
@@ -137,12 +138,12 @@ resource "aws_iam_role_policy" "deploy_isolation" {
           "elasticbeanstalk:UpdateTagsForResource",
         ]
         NotResource = [
-          "arn:${local.partition}:elasticbeanstalk:${var.region}:${local.account_id}:application/${local.stack_name}",
-          "arn:${local.partition}:elasticbeanstalk:${var.region}:${local.account_id}:applicationversion/${local.stack_name}/*",
-          "arn:${local.partition}:elasticbeanstalk:${var.region}:${local.account_id}:environment/${local.stack_name}/*",
-          "arn:${local.partition}:elasticbeanstalk:${var.region}:${local.account_id}:configurationtemplate/${local.stack_name}/*",
-          "arn:${local.partition}:elasticbeanstalk:${var.region}::solutionstack/*",
-          "arn:${local.partition}:elasticbeanstalk:${var.region}::platform/*",
+          "arn:${local.partition}:elasticbeanstalk:${local.region}:${local.account_id}:application/${local.stack_name}",
+          "arn:${local.partition}:elasticbeanstalk:${local.region}:${local.account_id}:applicationversion/${local.stack_name}/*",
+          "arn:${local.partition}:elasticbeanstalk:${local.region}:${local.account_id}:environment/${local.stack_name}/*",
+          "arn:${local.partition}:elasticbeanstalk:${local.region}:${local.account_id}:configurationtemplate/${local.stack_name}/*",
+          "arn:${local.partition}:elasticbeanstalk:${local.region}::solutionstack/*",
+          "arn:${local.partition}:elasticbeanstalk:${local.region}::platform/*",
         ]
       },
       {

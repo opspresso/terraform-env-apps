@@ -6,6 +6,7 @@ Argo Workflows의 앱 Delivery가 쓰는 AWS 리소스입니다. 이미지 push 
 | 리소스 | 용도 |
 | --- | --- |
 | IAM `app-delivery-push` | registry 단계가 session tag `delivery-project`로 assume합니다. 그 Project의 ECR repository `projects/<slug>`에만 push할 수 있습니다 |
+| ECR registry policy | `target_account_ids`(다른 계정 eb Target, 현재 nalbam-two)의 instance 역할 `runway-*-app`에 `projects/*` 이미지 pull을 허용합니다. repository를 registry 단계가 만들고 repository policy를 붙이지 않으므로 계정의 registry policy(scope `V2`)로 허용합니다. 계정에 하나뿐인 정책이므로 다른 registry 권한도 이 리소스에 추가합니다 |
 | DB subnet group `app-delivery-rds` | `RdsPostgres` 인스턴스만 쓰는 VPC intra subnet(`2-vpc`, 인터넷 경로 없음)입니다. 노드·Pod 주소가 없으므로 `RdsPostgres` NetworkPolicy가 이 대역의 5432를 열어도 클러스터의 다른 PostgreSQL에는 닿지 않습니다 |
 | Security group `app-delivery-rds` | EKS cluster primary security group(Auto Mode 노드와 Pod)에서 TCP 5432만 허용합니다. 어느 namespace가 접속할지는 클러스터의 NetworkPolicy가 정합니다 |
 | Security group `app-delivery-valkey` | `ValkeyCache` cache(intra subnet)의 security group입니다. EKS cluster primary security group에서 TCP 6379만 허용합니다. reader endpoint 포트 6380은 열지 않습니다 |

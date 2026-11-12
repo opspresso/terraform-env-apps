@@ -48,4 +48,24 @@ for root in demo/*/; do
   only_blocks "$root/02-remote-state.tf" '^data "terraform_remote_state" '
 done
 
+# Modules under modules/ use the same file names. The calling root pins the versions and configures the backend and
+# providers, so a module has only `terraform { required_providers }` in 02-versions.tf.
+for module in modules/*/; do
+  module="${module%/}"
+  compgen -G "$module/*.tf" >/dev/null || continue
+
+  for file in "$module"/*.tf; do
+    [[ "$(basename "$file")" =~ ^[0-9]{2}-[a-z0-9]+(-[a-z0-9]+)*\.tf$ ]] || err "$file" "name must be NN-<topic>.tf"
+  done
+
+  only_in '^variable "' 00-variables.tf "$module"
+  only_in '^output "' 99-outputs.tf "$module"
+  only_in '^terraform \{' 02-versions.tf "$module"
+  while IFS= read -r file; do
+    err "$file" "a module has no provider or backend block"
+  done < <(grep -lE '^provider "|^  backend "' "$module"/*.tf || true)
+  only_blocks "$module/00-variables.tf" '^variable "'
+  only_blocks "$module/02-versions.tf" '^terraform \{'
+done
+
 exit "$fail"

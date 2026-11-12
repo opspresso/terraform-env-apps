@@ -1,6 +1,6 @@
 # terraform-env-opsp
 
-opspresso 전용 AWS·EKS 리소스를 관리합니다. 공통 VPC·ALB·EKS·기본 노드와 addon 공통 Pod Identity는 [terraform-env-demo](https://github.com/opspresso/terraform-env-demo)가 관리합니다. `demo/`의 각 디렉터리는 독립된 Terraform root입니다.
+opspresso 전용 AWS·EKS 리소스를 관리합니다. 공통 VPC·ALB·EKS·기본 노드와 addon 공통 Pod Identity는 [terraform-env-demo](https://github.com/opspresso/terraform-env-demo)가 관리합니다. `demo/`의 각 디렉터리는 독립된 Terraform root이고, `modules/`에는 여러 root가 함께 쓰는 module을 둡니다.
 
 | 디렉터리 | 용도 |
 | --- | --- |
@@ -12,6 +12,7 @@ opspresso 전용 AWS·EKS 리소스를 관리합니다. 공통 VPC·ALB·EKS·�
 | [8-agent-runway](demo/8-agent-runway/README.md) | Runway KMS, 공유 bucket, Sandbox·테넌트 IAM 역할 |
 | [8-app-delivery](demo/8-app-delivery/README.md) | 앱 배포를 위한 registry 권한과 데이터 서비스 네트워크 |
 | [8-runway-target](demo/8-runway-target/README.md) | Agent Runway 환경의 `eb` target `demo-eb`의 deploy role, app boundary, EB 서비스 역할, source bundle bucket |
+| [8-runway-target-two](demo/8-runway-target-two/README.md) | 계정 nalbam-two(`552292899126`)의 `stg` 환경 `eb` target `two-eb-amd64`: VPC, `two.rovr.dev` zone·인증서, Variable KMS key, deploy·secrets 역할 |
 | [8-rovr](demo/8-rovr/README.md) | rovr 샌드박스 공유 캐시 EFS |
 | [8-comfy-render](demo/8-comfy-render/) | Comfy Render DynamoDB, S3, 작업 큐 |
 | [8-gitlab](demo/8-gitlab/README.md) | GitLab 오브젝트 스토리지 S3 |
@@ -58,7 +59,15 @@ plan에서 예상한 변경만 있는지 확인한 뒤 `terraform apply`를 실�
 - `variable`에는 `description`과 `type`을 씁니다.
 - 파일마다 `locals` 블록은 하나만 둡니다. 본문이 없는 블록은 `data "aws_caller_identity" "current" {}`처럼 한 줄로 씁니다.
 - 주석은 코드만으로 알 수 없는 이유·제약·외부 연결을 설명합니다. 파일 이름이나 블록 종류를 반복하는 머리 주석(`# variable`, `# output` 등)은 쓰지 않습니다.
-- 파일 이름을 바꾸거나 블록을 다른 파일로 옮겨도 state 주소는 바뀌지 않습니다. 리소스 이름을 바꿀 때는 `moved` 블록을 함께 씁니다.
+- 파일 이름을 바꾸거나 블록을 다른 파일로 옮겨도 state 주소는 바뀌지 않습니다. 리소스 이름을 바꾸거나 리소스를 module로 옮길 때는 `moved` 블록을 함께 씁니다.
+
+### Module
+
+`modules/<이름>/`은 root와 같은 파일 이름을 씁니다. `02-backend.tf` 대신 `02-versions.tf`에 `terraform { required_providers }`만 두고 version은 적지 않습니다. 호출하는 root가 Terraform·provider version을 고정하고 backend와 provider를 설정합니다. root는 `source = "../../modules/<이름>"`으로 호출합니다. `scripts/check-layout.sh`가 module의 파일 배치도 검사합니다.
+
+| Module | 사용하는 root | 내용 |
+| --- | --- | --- |
+| `runway-target` | `8-runway-target`, `8-runway-target-two` | Agent Runway `eb` target의 app boundary, deploy role, EB 서비스 역할, source bundle bucket. 다른 계정의 target이면 external ID 조건과 secrets 역할 |
 
 ## 기존 환경 이전
 
