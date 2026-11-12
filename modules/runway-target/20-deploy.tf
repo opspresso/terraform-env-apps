@@ -106,6 +106,14 @@ resource "aws_iam_role_policy" "deploy" {
         Action   = ["route53:GetChange"]
         Resource = "arn:${local.partition}:route53:::change/*"
       },
+      {
+        # In some accounts Elastic Load Balancing checks, with the caller's permissions, that the security groups given to
+        # CreateLoadBalancer belong to the VPC. The Elastic Beanstalk administrator policy does not grant this read.
+        Sid      = "LoadBalancerSecurityGroups"
+        Effect   = "Allow"
+        Action   = ["ec2:GetSecurityGroupsForVpc"]
+        Resource = "*"
+      },
     ]
   })
 }
