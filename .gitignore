@@ -20,7 +20,7 @@ $RECYCLE.BIN/
 .terraform.lock.hcl
 terraform.tfstate.backup
 terraform.tfstate
-terraform.tfplan
+*.tfplan
 *.tfvars
 *.tfvars.json
 

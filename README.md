@@ -1,6 +1,6 @@
 # terraform-env-opsp
 
-opspresso 전용 AWS·EKS 리소스를 관리합니다. 공통 VPC·ALB·EKS·기본 노드와 addon 공통 Pod Identity는 [terraform-env-demo](https://github.com/opspresso/terraform-env-demo)가 관리합니다. `demo/`의 각 디렉터리는 독립된 Terraform root입니다.
+opspresso 전용 AWS·EKS 리소스를 관리합니다. 공통 VPC·ALB·EKS·기본 노드와 addon 공통 Pod Identity는 [terraform-env-demo](https://github.com/opspresso/terraform-env-demo)가 관리합니다. `demo/`의 각 디렉터리는 독립된 Terraform root이고, `modules/`에는 여러 root가 함께 쓰는 module을 둡니다.
 
 | 디렉터리 | 용도 |
 | --- | --- |
@@ -58,7 +58,15 @@ plan에서 예상한 변경만 있는지 확인한 뒤 `terraform apply`를 실�
 - `variable`에는 `description`과 `type`을 씁니다.
 - 파일마다 `locals` 블록은 하나만 둡니다. 본문이 없는 블록은 `data "aws_caller_identity" "current" {}`처럼 한 줄로 씁니다.
 - 주석은 코드만으로 알 수 없는 이유·제약·외부 연결을 설명합니다. 파일 이름이나 블록 종류를 반복하는 머리 주석(`# variable`, `# output` 등)은 쓰지 않습니다.
-- 파일 이름을 바꾸거나 블록을 다른 파일로 옮겨도 state 주소는 바뀌지 않습니다. 리소스 이름을 바꿀 때는 `moved` 블록을 함께 씁니다.
+- 파일 이름을 바꾸거나 블록을 다른 파일로 옮겨도 state 주소는 바뀌지 않습니다. 리소스 이름을 바꾸거나 리소스를 module로 옮길 때는 `moved` 블록을 함께 씁니다.
+
+### Module
+
+`modules/<이름>/`은 root와 같은 파일 이름을 씁니다. `02-backend.tf` 대신 `02-versions.tf`에 `terraform { required_providers }`만 두고 version은 적지 않습니다. 호출하는 root가 Terraform·provider version을 고정하고 backend와 provider를 설정합니다. 이 저장소의 root는 `source = "../../modules/<이름>"`, 다른 저장소는 `git::https://github.com/opspresso/terraform-env-opsp.git//modules/<이름>?ref=<commit SHA>`로 호출합니다. module의 변수·출력을 바꾸면 다른 저장소의 호출도 확인합니다. `scripts/check-layout.sh`가 module의 파일 배치도 검사합니다.
+
+| Module | 사용하는 root | 내용 |
+| --- | --- | --- |
+| `runway-target` | `8-runway-target`, [terraform-env-two](https://github.com/opspresso/terraform-env-two) `two/8-runway-target` | Agent Runway `eb` target의 app boundary, deploy role, EB 서비스 역할, source bundle bucket. 다른 계정의 target이면 external ID 조건과 secrets 역할 |
 
 ## 기존 환경 이전
 

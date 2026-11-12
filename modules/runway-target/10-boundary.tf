@@ -1,7 +1,9 @@
 # The permissions boundary of every role a Runway stack creates (argocd-env-projects charts/delivery
 # files/eb-stack.yaml InstanceRole). The deploy role may create roles only with this boundary, so a stack can never
 # grant an instance more than this: the Elastic Beanstalk web tier, Agent Runway Variables and Project images.
-# The stack's own policy narrows it to one environment's SSM path and one Project repository.
+# The stack's own policy narrows it to one environment's SSM path and one Project repository. The repositories are in
+# the management account; a Target in another account also needs the management registry's policy to allow the pull
+# (demo/8-app-delivery).
 resource "aws_iam_policy" "app_boundary" {
   name        = "agent-runway-app-boundary"
   description = "Upper limit of the instance roles of Agent Runway Target stacks"
@@ -36,14 +38,14 @@ resource "aws_iam_policy" "app_boundary" {
         Sid      = "Variables"
         Effect   = "Allow"
         Action   = ["ssm:GetParametersByPath"]
-        Resource = [for name in [var.target_name, var.amd64_target_name] : "arn:${local.partition}:ssm:${var.region}:${local.account_id}:parameter/agent-runway/${name}/*"]
+        Resource = [for name in var.target_names : "arn:${local.partition}:ssm:${local.region}:${local.account_id}:parameter/agent-runway/${name}/*"]
       },
       {
         Sid       = "VariableKey"
         Effect    = "Allow"
         Action    = ["kms:Decrypt"]
-        Resource  = data.aws_kms_alias.secrets.target_key_arn
-        Condition = { StringEquals = { "kms:ViaService" = "ssm.${var.region}.amazonaws.com" } }
+        Resource  = var.secrets_key_arn
+        Condition = { StringEquals = { "kms:ViaService" = "ssm.${local.region}.amazonaws.com" } }
       },
       {
         Sid      = "RegistryLogin"

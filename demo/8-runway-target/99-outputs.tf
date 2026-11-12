@@ -18,11 +18,11 @@ output "eb_target" {
       medium = { instanceTypes = { arm64 = var.instance_types[1], amd64 = var.amd64_instance_types[1] }, min = 1, max = 2 }
       large  = { instanceTypes = { arm64 = var.instance_types[2], amd64 = var.amd64_instance_types[2] }, min = 2, max = 4 }
     }
-    deployRole          = aws_iam_role.deploy.arn
-    artifactBucket      = aws_s3_bucket.artifacts.bucket
+    deployRole          = module.target.deploy_role_arn
+    artifactBucket      = module.target.artifact_bucket
     solutionStack       = var.solution_stack
-    serviceRole         = aws_iam_role.service.arn
-    permissionsBoundary = aws_iam_policy.app_boundary.arn
+    serviceRole         = module.target.service_role_arn
+    permissionsBoundary = module.target.permissions_boundary_arn
     vpcId               = data.terraform_remote_state.vpc.outputs.vpc_id
     instanceSubnets     = data.terraform_remote_state.vpc.outputs.private_subnets
     loadBalancerSubnets = data.terraform_remote_state.vpc.outputs.public_subnets

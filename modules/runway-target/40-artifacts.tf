@@ -1,7 +1,7 @@
 # Source bundles of the Target's Deployments: <project>/<environment>/<Deployment ID>.zip. A bundle holds no secret
 # value. Elastic Beanstalk copies the bundle of each application version, so an old bundle can expire.
 resource "aws_s3_bucket" "artifacts" {
-  bucket = "agent-runway-${var.target_name}-${local.account_id}"
+  bucket = var.artifact_bucket
 }
 
 resource "aws_s3_bucket_public_access_block" "artifacts" {
