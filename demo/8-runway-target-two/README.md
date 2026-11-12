@@ -34,8 +34,13 @@ Agent Runway `stg` 환경의 `eb` target `two-eb-amd64`가 쓰는 계정 nalbam-
 ## 적용 순서
 
 1. `demo/7-eks-shared`(`pod-role--delivery-target`, `pod-role--agent-runway`)가 적용되어 있어야 한다. trust policy가 두 역할을 가리킨다.
-2. Agent Runway 관리자가 환경 `stg`에 `account`(`id`, `region`, `access.secretsRole`)를 저장한다. Agent Runway가 `access.externalId`를 만든다.
-   machine target이 아직 없으므로 접근 확인은 하지 않는다.
+2. Agent Runway 관리자가 환경 `stg`에 다음 `account`를 저장한다. 첫 적용 전에는 `terraform output`이 없으므로 이 값을 직접 넣는다.
+   Agent Runway가 `access.externalId`를 만든다. machine target이 아직 없으므로 접근 확인은 하지 않는다.
+
+   ```json
+   {"id": "552292899126", "region": "ap-northeast-2",
+    "access": {"secretsRole": "arn:aws:iam::552292899126:role/agent-runway-target-secrets"}}
+   ```
 3. 이 디렉터리를 적용한다. 인증서 검증은 NS 위임이 퍼진 뒤 끝나므로 몇 분 걸릴 수 있다.
 
    ```bash

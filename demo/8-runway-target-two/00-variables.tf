@@ -29,8 +29,8 @@ variable "runway_external_id" {
 
   validation {
     # RE2 allows at most 1000 repetitions, so the length is checked apart.
-    condition     = length(var.runway_external_id) >= 2 && length(var.runway_external_id) <= 1224 && can(regex("^[A-Za-z0-9+=,.@:/-]+$", var.runway_external_id))
-    error_message = "runway_external_id must be an STS external ID: 2-1224 characters of A-Z, a-z, 0-9 and +=,.@:/-."
+    condition     = length(var.runway_external_id) >= 2 && length(var.runway_external_id) <= 1224 && can(regex("^[A-Za-z0-9_+=,.@:/-]+$", var.runway_external_id))
+    error_message = "runway_external_id must be an STS external ID: 2-1224 characters of A-Z, a-z, 0-9 and _+=,.@:/-."
   }
 }
 

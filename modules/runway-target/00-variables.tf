@@ -31,8 +31,8 @@ variable "external_id" {
 
   validation {
     # RE2 allows at most 1000 repetitions, so the length is checked apart.
-    condition     = var.external_id == null || (length(var.external_id) >= 2 && length(var.external_id) <= 1224 && can(regex("^[A-Za-z0-9+=,.@:/-]+$", var.external_id)))
-    error_message = "external_id must be an STS external ID: 2-1224 characters of A-Z, a-z, 0-9 and +=,.@:/-."
+    condition     = var.external_id == null || (length(var.external_id) >= 2 && length(var.external_id) <= 1224 && can(regex("^[A-Za-z0-9_+=,.@:/-]+$", var.external_id)))
+    error_message = "external_id must be an STS external ID: 2-1224 characters of A-Z, a-z, 0-9 and _+=,.@:/-."
   }
 }
 
